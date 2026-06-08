@@ -10,7 +10,6 @@
 */
 
 import Server from '@ioc:Adonis/Core/Server'
-
 /*
 |--------------------------------------------------------------------------
 | Global middleware
@@ -39,5 +38,6 @@ Server.middleware.register([() => import('@ioc:Adonis/Core/BodyParser')])
 |
 */
 Server.middleware.registerNamed({
-    auth: () => import('App/Middleware/Auth')
+    auth: () => import('App/Middleware/Auth'),
+    role: () => import('App/Middleware/RoleGuard') 
 })

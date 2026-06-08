@@ -24,4 +24,14 @@ Route.group(() => {
   Route.post('/register', 'AuthController.register')
   Route.post('/login', 'AuthController.login')
   Route.post('/refresh', 'AuthController.refresh').middleware('auth')
+  Route.get('/google/redirect', 'AuthController.redirectToGoogle')
+  Route.get('/google/callback', 'AuthController.handleGoogleCallback')
 }).prefix('/auth')
+
+Route.group(() => {
+  Route.get('/test-dashboard', async () => {
+    return { success: true, message: 'Selamat datang di Ruang Rahasia Admin!' }
+  })
+})
+  .prefix('/admin')
+  .middleware(['auth', 'role:admin'])
