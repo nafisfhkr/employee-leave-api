@@ -29,6 +29,10 @@ Route.group(() => {
 }).prefix('/auth')
 
 Route.group(() => {
+  Route.post('/leave-requests', 'LeaveRequestsController.store')
+}).middleware('auth')
+
+Route.group(() => {
   Route.get('/test-dashboard', async () => {
     return { success: true, message: 'Selamat datang di Ruang Rahasia Admin!' }
   })
