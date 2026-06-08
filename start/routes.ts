@@ -29,9 +29,17 @@ Route.group(() => {
 }).prefix('/auth')
 
 Route.group(() => {
+  Route.post('/leave-requests', 'LeaveRequestsController.store')
+  Route.get('/leave-requests', 'LeaveRequestsController.index') 
+}).middleware('auth')
+
+Route.group(() => {
   Route.get('/test-dashboard', async () => {
-    return { success: true, message: 'Selamat datang di Ruang Rahasia Admin!' }
+    return { success: true, message: 'Selamat datang di Ruang Admin!' }
   })
+  Route.patch('/leave-requests/:id/approve', 'AdminLeaveRequestsController.approve')
+  Route.patch('/leave-requests/:id/reject', 'AdminLeaveRequestsController.reject')
+  Route.get('/leave-requests', 'AdminLeaveRequestsController.index')
 })
   .prefix('/admin')
   .middleware(['auth', 'role:admin'])
