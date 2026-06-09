@@ -10,13 +10,18 @@ export default class LeaveRequestService {
     const diffInMilliseconds = payload.endDate.toMillis() - payload.startDate.toMillis()
     const totalDays = Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24)) + 1 
 
-    const fileName = `${randomUUID()}.${attachment.extname}`
+
+    if (totalDays > user.remainingLeave) {
+      throw new Error('EXCEEDS_QUOTA') 
+    }
+
+   const fileName = `${randomUUID()}.${attachment.extname}`
     await attachment.move(Application.tmpPath('uploads'), {
       name: fileName,
       overwrite: true,
     })
 
-    const leaveRequest = await LeaveRequest.create({
+ const leaveRequest = await LeaveRequest.create({
       id: randomUUID(),
       userId: user.id,
       startDate: payload.startDate,
@@ -24,9 +29,9 @@ export default class LeaveRequestService {
       totalDays: totalDays,
       reason: payload.reason,
       attachmentUrl: `uploads/${fileName}`,
-      status: 'pending'
+      status: 'pending' 
     })
-
+    
     return leaveRequest
   }
 
