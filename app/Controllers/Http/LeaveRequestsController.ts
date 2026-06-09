@@ -5,19 +5,28 @@ import LeaveRequest from 'App/Models/LeaveRequest'
 
 export default class LeaveRequestsController {
   public async store({ request, response, auth }: HttpContextContract) {
-    const payload = await request.validate(CreateLeaveRequestValidator)
-    
-    const attachment = request.file('attachment')!
+    try {
+      const payload = await request.validate(CreateLeaveRequestValidator)
+      const attachment = request.file('attachment')!
+      const user = auth.user!
 
-    const user = auth.user!
+      const leaveRequest = await LeaveRequestService.createRequest(user, payload, attachment)
 
-    const leaveRequest = await LeaveRequestService.createRequest(user, payload, attachment)
-
-    return response.status(201).send({
-      success: true,
-      message: 'Pengajuan cuti berhasil dibuat',
-      data: leaveRequest
-    })
+      return response.status(201).send({
+        success: true,
+        message: 'Pengajuan cuti berhasil dibuat',
+        data: leaveRequest
+      })
+    } catch (error) {
+      if (error instanceof Error && error.message === 'EXCEEDS_QUOTA') {
+        return response.status(400).send({
+          success: false,
+          message: 'Pengajuan ditolak. Total hari cuti melebihi sisa kuota tahunan Anda.'
+        })
+      }
+      
+      return response.status(500).send({ message: 'Terjadi kesalahan pada server' })
+    }
   }
 
   public async index({ request, auth, response }: HttpContextContract) {
